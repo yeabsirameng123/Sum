@@ -1,0 +1,38 @@
+name: C++ Build and Run
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build C++ Program
+      run: |
+        g++ -o sum sum.cpp
+        mv sum $GITHUB_WORKSPACE
+      shell: bash
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: cpp-artifact
+        path: $GITHUB_WORKSPACE/sum
+
+  run:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: cpp-artifact
+
+    - name: Run C++ Program
+      run: |
+        ./sum
+      shell: bash
